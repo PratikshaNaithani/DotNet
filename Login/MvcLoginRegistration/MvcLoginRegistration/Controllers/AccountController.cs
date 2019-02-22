@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +11,10 @@ namespace MvcLoginRegistration.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            using (OurDbContext db = new OurDbContext())
+            { 
+                return View(db.userAccount.ToList());
+            }
         }
         public ActionResult Register()
         {
@@ -46,7 +49,25 @@ namespace MvcLoginRegistration.Controllers
                 if(usr!= null)
                 {
                     Session["UserID"] = usr.UserID.ToString();
+                    Session["Username"] = usr.Username.ToString();
+                    return RedirectToAction("LoggedIn");
                 }
+                else
+                {
+                    ModelState.AddModelError("", "user name or password wrong!");
+                }
+            }
+            return View();
+        }
+        public ActionResult LoggedIn()
+        {
+            if(Session["UserId"]!=null)
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login");
             }
         }
     }
